@@ -4,9 +4,25 @@ public class UserModel {
 	
 	
 	
-	String username;
-	String mobile;
+	private String username;
+	private String mobile;
+	private String address = "Default Address"; 
 	
+	public UserModel(){
+		
+	}
+	
+	public UserModel(String username,String mobile){
+		this.mobile = mobile;
+		this.username = username;
+	}
+	
+	public UserModel(String username,String mobile,String address){
+		this.address = address;
+		this.mobile = mobile;
+		this.username = username;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -18,6 +34,12 @@ public class UserModel {
 	}
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
 }

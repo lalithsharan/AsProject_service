@@ -7,9 +7,11 @@
 <script>
 	$(function() {
 		$('.contentDiv').hide();
-		$('#addSlotDiv').show();
+		//$('#addSlotDiv').show();
+		$("#displayRportsDiv").hide();
 		$('.contentSelection').click(function() {
 			$('.contentDiv').hide();
+			$("#displayRportsDiv").hide();
 			$('#' + $(this).attr('id') + 'Div').show();
 		});
 
@@ -41,37 +43,26 @@
 </script>
 <script type="text/javascript">
 	$(function(){
-		
+		var myBookingsTableDiv = $('#myBookingsTableDiv').DataTable();
+		$("#displayRportsDiv").hide();
 		$('#addBooking').click(function(){
 				
 			$.ajax({
 				url: "api/bookings/myBookings",
 				data : {},
 				success: function(result){
-					var content =
-						'<table class="table table-hover " >'
-						+'<th class="tablestyle">Slot Time</th><th class="tablestyle">Doctor Name</th><th class="tablestyle">Speciality</th>';
-				var htmlContent='';
-					console.log(result);
-					if (result.status == "OK") {
 					
+					if (result.status == "OK") {
+						myBookingsTableDiv.clear().draw();
 						$.each(result.bookings,function(index,item) {
 							
-							htmlContent = htmlContent
-									+ "<tr>"+"<td>"
-									+  item.slotTime  +"</td>"+"<td>"
-									
-									+ item.doctor.name+"</td>"+"<td>"
-									
-									+ item.doctor.speciality+"</td>"
-									+ "</tr>";
-			content=content+htmlContent;
-			htmlContent='';
-							console.log(index+ " => "+ item.name);
+							var date = new Date(item.slotTime);
+							var time = date.toLocaleString();
+							var link = '<a onclick="viewReports()">View</a>';
+							myBookingsTableDiv.row.add([item.user.name,item.user.username,time,link]).draw( false );
+							
 							}); // End $.each
-						content=content+"</table>";
-						$('#addBookingDiv').empty();
-						$('#addBookingDiv').append(content);
+						
 						}
 				}
 				
@@ -79,8 +70,13 @@
 			});
 			
 		});	
-	
+		$('#addBooking').click();
 	});
+	function viewReports()
+	{
+		
+		$("#displayRportsDiv").show();
+	}
 </script>
 
 </head>
@@ -89,11 +85,10 @@
 		<div class="row">
 			<div class="col-md-2">
 				<div class="btn-group-vertical">
-					
+					<button id="addBooking" type="button"
+						class="btn btn-primary contentSelection">My Bookings</button>
 					<button id="addSlot" type="button"
 						class="btn btn-primary contentSelection">Add Slots</button>
-							<button id="addBooking" type="button"
-						class="btn btn-primary contentSelection">My Bookings</button>
 				</div>
 			</div>
 			
@@ -153,7 +148,65 @@
 			</div>
 		
 			<div id="addBookingDiv" class="contentDiv">
-				
+				<div class="col-md-9">
+					<table class="table table-hover " id="myBookingsTableDiv">
+						<thead>
+							<tr>
+								<th class="tablestyle">UserName</th><th class="tablestyle">UserMobile</th><th class="tablestyle">Slot Time</th>
+								<th class="tablestyle">View</th>
+							</tr>
+						</thead>
+						<tbody>
+										
+						</tbody>
+					</table>
+					</div>
+					<div class="row" id="displayRportsDiv">
+					<div class="col-md-12" align="center">
+					<div class="col-sm-2">
+					</div>
+					<div class="col-sm-9">
+					<table style="width:361px;">
+						<tr>
+							<td>Vitals</td>
+							<td>	
+								<textarea class="form-control" rows="2">
+									
+								</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>Doctor Review</td>
+							<td>	
+								<textarea class="form-control" rows="2">
+									
+								</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>Diagnostics Review</td>
+							<td>	
+								<textarea class="form-control" rows="2">
+									
+								</textarea>
+							</td>
+						</tr>
+						<tr>
+							<td>Medical Prescription</td>
+							<td>	
+								<textarea class="form-control" rows="2">
+									
+								</textarea>
+							</td>
+						</tr>
+					</table>
+					<div class="clearfix">&nbsp;&nbsp;</div>
+					<div class="text-center">
+						<button type="button" class="btn btn-default">Save</button>
+					</div>
+					</div>
+					</div>
+					</div>
 					</div>
 				</div>
 			

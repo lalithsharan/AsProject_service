@@ -15,8 +15,206 @@
 		var doctormoile = '';
 
 		var date = new Date();
+		var date2 = new Date();
 		console.log(speciality);
 		$('#form').hide();
+		var myBookingsTableDiv = $('#myBookingsTableDiv').DataTable();
+		/* get lab tests */
+		$('#addLabBooking')
+				.click(
+						function() {
+							$('#slotbookingArea2').hide();
+							$('#dateArea2').hide();
+							$('#form2').hide();
+							$('#output2').empty();
+							$('#labTypeDiv').empty();
+							$('#labSubTypeDiv').empty();
+							$
+									.ajax({
+
+										url : "api/lab/type",
+										data : {
+
+										},
+										success : function(result) {
+											console.log(result);
+											if (result.status == "OK") {
+
+												$
+														.each(
+																result.results,
+																function(index,
+																		item) {
+																	var htmlContent = '';
+																	htmlContent = htmlContent
+																			+ "<p>"
+																			+ '<input type="radio"  name="labTest" value="'+  item.id + '"  class="labTest"  />'
+																			+ item.name
+																			+ "</p>"
+																			;
+
+																	console
+																			.log(index
+																					+ " => "
+																					+ item.name);
+																	$(
+																			'#labTypeDiv')
+																			.append(
+																					htmlContent);
+																});//each loop end
+
+											}//ok end
+											$(".labTest")
+													.click(
+															function() {
+																var id = $(this)
+																		.attr(
+																				'value');
+																var url = "api/lab/subType/"
+																		+ id;
+																$
+																		.ajax({
+																			url : url,
+																			data : {
+
+																			},
+																			success : function(
+																					result) {
+																				console.log(result);
+																				
+																				if (result.status == "OK") {
+
+																					$(
+																							'#labSubTypeDiv')
+																							.html(
+																									'');
+
+																					$
+																							.each(
+																									result.results,
+																									function(
+																											index,
+																											item) {
+																										var htmlContent = '';
+																										htmlContent = htmlContent
+																												+ "<p>"
+																												+ '<input type="radio"  name="subtype" value="'+  item.id  + '"  class="subtype"  />'
+																												+ item.name
+																												+ "</p>";
+
+																										console
+																												.log(index
+																														+ " => "
+																														+ item.name);
+																										$(
+																												'#labSubTypeDiv')
+																												.append(
+																														htmlContent);
+																									}); // End $.each
+																				} // End STatus OK
+
+																				$('.subtype').click(function() {
+																				var d = new Date();
+																				var date = (d.getFullYear())+'-'+(d.getMonth()+1)+ '-' +(d.getDate());
+																				$('#datetimepicker2').val(date).change();
+																				$(
+																					'#dateArea2').show();
+																				});
+																			}
+
+																		});
+
+															});
+										}//Success End
+									});//Ajax End
+
+						});/* get lab tests End */
+
+		/*get slots for lab tests  */
+
+		$('#datetimepicker2').change(
+				function() {
+					var date2 = $('#datetimepicker2').val();
+					$('#form2').show();
+					$('#output2').empty();
+					$('#slotsDropdown2').find('option').remove();
+					var id = $('input[name=subtype]:checked', '#labSubTypeDiv')
+							.val();
+					;
+
+					$.ajax({
+						url : "api/lab/slots",
+						data : {
+							subTypeId : id,
+							date : date2
+						},
+						success : function(result) {
+							console.log(result);
+							if (result.status == "OK") {
+								$('#slotsDropdown2').find('option').remove();
+								$('#slotdisplayArea2').html('');
+								$('#slotdisplayArea2').show();
+
+								$.each(result.results, function(index, slot) {
+									$.each(slot.availableSlots, function(index,
+											item) {
+										console.log(item);
+										$('#slotsDropdown2').append(
+												$('<option></option>', {
+													value : item.id,
+													text : item.slotTime
+												}));
+
+									});
+								});
+								$('#slotbookingArea2').show();// End $.each
+							} // End STatus OK
+
+						}
+
+					});
+
+				});
+
+		/*Lab booking Submitbtn  */
+		$('#labBooking').click(
+				function() {
+					$.ajax({
+						type : "POST",
+						url : "api/lab/booking",
+						data : {
+							slotId : $('#slotsDropdown2').val(),
+							address : $('#labbookingaddress').val(),
+							mobile : $('#labbookingmobile').val(),
+							name : $('#labbookingname').val(),
+							source : $('#labbookingsource').val(),
+							receive_mode : $('#recievemode').val()
+						},
+						success : function(result) {
+							console.log(result);
+
+							if (result.status == "OK") {
+
+								$('#output2').empty();
+								$('#output2').show();
+
+								$('#output2').append(
+										"<h4>Booking Completed Successfully"
+												+ "<br/>" + "Slot time:"
+												+ result.results[0].slotTime
+												+ "<br/>" + "Test:"
+												+ result.results[0].testName
+												+ "<br/>" + "Recieve Mode:"
+												+ result.results[0].receiveMode
+												+ "</h4>"
+
+								);
+
+							}
+						}
+					});
+
+				});
 
 		$('#addSlot').click(
 				function() {
@@ -50,32 +248,43 @@
 
 				});
 
-		$('#submitbtn').click(function() {
-			alert($('#source').val())
-			$.ajax({
-				url : "api/bookings/slotBooking",
-				data : {
-					"slotId" : $('#slotsDropdown').val(),
-					"name" : $('#bookingName').val(),
-					"mobile" : $('#bookingMobile').val(),
-					"source" : $('#bookingSource').val()
-				},
-				success : function(result) {
-					console.log(result);
+		$('#submitbtn')
+				.click(
+						function() {
 
-					if (result.status == "OK") {
-						alert("Booking completed Successfully");
+							$
+									.ajax({
 
-					}
-				}
-			});
-		});
+										url : "api/bookings/slotBooking",
+										data : {
+											"slotId" : $('#slotsDropdown')
+													.val(),
+											"name" : $('#bookingName').val(),
+											"mobile" : $('#bookingMobile')
+													.val(),
+											"source" : $('#bookingSource')
+													.val()
+										},
+										success : function(result) {
+											console.log(result);
+
+											if (result.status == "OK") {
+												$('#output').empty();
+												$('#output')
+														.append(
+																"<h2>Booking Completed Successfully...</h2>");
+
+											}
+										}
+									});
+						});
 
 		$("#datebtn").click(function() {
 			date = $('#datetimepicker').val();
 			doctorId = $('input[name=doctor]:checked', '#displayArea').val();
 			$('#form').show();
 			$('#slotbookingArea').show();
+			$('#output').empty();
 
 			$.ajax({
 				url : "api/slotsByDate",
@@ -119,51 +328,18 @@
 										url : "api/bookings/myBookings",
 										data : {},
 										success : function(result) {
-											var content = '<table class="table table-hover " >'
-													+ '<th class="tablestyle">Slot Time</th><th class="tablestyle">User Name</th><th class="tablestyle">User Mobile</th><th class="tablestyle">Doctor Name</th><th class="tablestyle">Speciality</th>';
-											var htmlContent = '';
 											console.log(result);
 											if (result.status == "OK") {
+												myBookingsTableDiv.clear().draw();
+												$.each(result.bookings,function(index,item) {
 
-												$
-														.each(
-																result.bookings,
-																function(index,
-																		item) {
-
-																	htmlContent = htmlContent
-																			+ "<tr>"
-																			+ "<td>"
-																			+ item.slotTime
-																			+ "</td>"
-																			+ "<td>"
-																			
-																			+ item.user.name
-																			+ "</td><td>"
-																			+item.user.username
-																			+"</td><td>"
-											
-																			+ item.doctor.name
-																			+ "</td>"
-																			+ "<td>"
-
-																			+ item.doctor.speciality
-																			+ "</td>"
-																			+ "</tr>";
-																	content = content
-																			+ htmlContent;
-																	htmlContent = '';
-																	console
-																			.log(index
-																					+ " => "
-																					+ item.name);
-
+																	var date = new Date(item.slotTime);
+																	var time = date.toLocaleString();
+																	
+																	myBookingsTableDiv.row.add([time,item.user.name,item.user.username,item.doctor.name,item.doctor.name,item.doctor.speciality]).draw( false );
+																	
 																}); // End $.each
-												content = content + "</table>";
-												$('#displayBookingArea').empty();
-												console.log(content);
-												$('#displayBookingArea').append(
-														content);
+												
 											}
 										}
 
@@ -181,6 +357,7 @@
 							console.log(speciality);
 							speciality = $(this).context.id;
 							console.log(speciality);
+							$('#output').empty();
 							location = "hyderabad";
 							type = "clinic";
 							console.log(location);
@@ -200,10 +377,8 @@
 												if (result.doctors.length == 0) {
 													$('#displayArea')
 															.append(
-																	'<center><h3 class="style-heading" >No Doctors availale  for '
+																	'<center><h3>No Doctors availale  for '
 																			+ speciality
-																			+ ' in '
-																			+ location
 																			+ ' </h3></center>');
 												}
 												$
@@ -213,10 +388,10 @@
 																		item) {
 																	var htmlContent = '';
 																	htmlContent = htmlContent
-																			+ "<h3>"
+																			+ "<p>"
 																			+ '<input type="radio"  name="doctor" value="'+  item.id  + '"  class="doctor"  />'
 																			+ item.name
-																			+ "</h3>";
+																			+ "</p>";
 
 																	console
 																			.log(index
@@ -236,11 +411,53 @@
 														$('#slotbookingArea')
 																.hide();
 														$('#dateArea').show();
+														$('#output').empty();
 													})
 										} // End Success : function
 									}); // End Ajax
 							console.log("ajax req sent");
 						});
+
+		$('#submitbtn2').click(
+				function() {
+
+					$.ajax({
+						type : "POST",
+						url : "api/lab/booking",
+						data : {
+							slotId : $('#slotsDropdown2').val(),
+							address : $('#labbookingaddress').val(),
+							mobile : $('#labbookingmobile').val(),
+							name : $('#labbookingname').val(),
+							source : $('#labbookingsource').val(),
+							receive_mode : $('#recievemode').val()
+						},
+						success : function(result) {
+							console.log(result);
+
+							if (result.status == "OK") {
+
+								$('#output2').empty();
+								$('#output2').show();
+
+								$('#output2').append(
+										"<h4>Booking Completed Successfully"
+												+ "<br/>" + "Slot time:"
+												+ result.results[0].slotTime
+												+ "<br/>" + "Test:"
+												+ result.results[0].testName
+												+ "<br/>" + "Recieve Mode:"
+												+ result.results[0].receiveMode
+												+ "</h4>"
+
+								);
+
+							}
+						}
+					});
+
+				});
+
 		$("#bookbtn").click(function() {
 			$('#form').show();
 		})
@@ -249,7 +466,17 @@
 <script>
 	$(function() {
 		$("#datetimepicker").datepicker({
-			dateFormat : "yy-mm-dd"
+			dateFormat : "yy-mm-dd",
+			minDate : 0
+		});
+
+	});
+</script>
+<script>
+	$(function() {
+		$("#datetimepicker2").datepicker({
+			dateFormat : "yy-mm-dd",
+			minDate : 0
 		});
 
 	});
@@ -257,9 +484,17 @@
 <script>
 	$(function() {
 		$('.contentDiv').hide();
-		$('#addDocDiv').show();
+		//$('#addDocDiv').show();
+		$('#displayAreaDiv').empty();
 		$('.contentSelection').click(function() {
 			$('.contentDiv').hide();
+			if ($(this).attr("value") != "addBooking") {
+				$('#slotbookingArea').hide();
+				$('#displayArea').empty();
+				$('#displayAreaDiv').empty();
+				$('#dateArea').hide();
+				$('#form').hide();
+			}
 			$('#' + $(this).attr('id') + 'Div').show();
 		});
 
@@ -274,7 +509,7 @@
 			startTime = $('#startTime').val();
 			endTime = $('#endTime').val();
 			speciality = $('#speciality').val();
-			alert(name + mobile + startTime + endTime + speciality);
+			//alert(name + mobile + startTime + endTime + speciality);
 			$.ajax({
 
 				type : "POST",
@@ -291,7 +526,9 @@
 				success : function(result) {
 					console.log(result);
 					if (result.status == "OK") {
-						alert("Insertion completed");
+						
+						$('#displayAreaDiv').empty();
+						$('#displayAreaDiv').append("Insertion completed");
 
 					}
 				}
@@ -316,7 +553,8 @@
 				success : function(result) {
 					console.log(result);
 					if (result.status == "OK") {
-						alert("DONE....");
+						$('#displayAreaDiv').empty();
+						$('#displayAreaDiv').append("add slots added successfully");
 					}
 
 				}
@@ -324,33 +562,78 @@
 			});
 		});
 
-		$('#usersubmit').click(function() {
-			alert("" + $(this).attr('id'));
+		$('#usersubmit')
+				.click(
+						function() {
 
-			$.ajax({
-				url : "api/doctor",
-				data : {
-					"speciality" : "Gynocologist",
-					"location" : "Hyderaad",
-					"type" : "clinic"
-				},
-				success : function(result) {
-					console.log(result);
-					if (result.status == "OK") {
-						alert("DONE....");
-					}
+							$
+									.ajax({
+										type : "post",
+										url : "api/user",
+										data : {
+											"username" : $('#username').val(),
+											"name" : $('#name1').val(),
+											"password" : $('#password').val(),
+											"role" : "ROLE_USER"
+										},
+										success : function(result) {
+											console.log(result);
+											var content = '<table class="table table-hover " >'
+													+ '<th class="tablestyle">User Name</th><th class="tablestyle">Mobile</th><th class="tablestyle">Role</th>';
+											var htmlContent = '';
+											console.log(result);
+											if (result.status == "OK") {
+												
+												$
+														.each(
+																result.users,
+																function(index,
+																		item) {
 
-				}
+																	htmlContent = htmlContent
+																			+ "<tr>"
+																			+ "<td>"
+																			+ item.name
+																			+ "</td>"
+																			+ "<td>"
 
-			});
-		});
+																			+ item.mobile
+																			+ "</td>"
+																			+ "<td>"
+
+																			+ item.role
+																			+ "</td>"
+																			+ "</tr>";
+																	content = content
+																			+ htmlContent;
+																	htmlContent = '';
+																	console
+																			.log(index
+																					+ " => "
+																					+ item.name);
+
+																}); // End $.each
+												content = content + "</table>";
+												$('#displayAreaDiv').empty();
+												$('#displayAreaDiv').append("User added successfully");
+												 
+											}
+										}
+
+									});
+						});
 
 		$('#bookingsubmit').click(function(e) {
-			alert("" + $(this).attr('id'));
-
+			//alert("" + $(this).attr('id'));
+			
 		});
+		
+		
 
+		$('#getBookings').click();
 	});
+	
+	
 </script>
 </head>
 <body>
@@ -358,19 +641,29 @@
 		<div class="row">
 			<div class="col-md-2">
 				<div class="btn-group-vertical">
+					<button id="getBookings" type="button"
+						class="btn btn-primary contentSelection">View Doctor Bookings</button>
+					<button id="getBookings" type="button"
+						class="btn btn-primary contentSelection">View Lab Bookings</button>
+					<button id="addLabBooking" type="button"
+						class="btn btn-primary contentSelection">Add Lab Booking</button>
+					<button id="addBooking" type="button"
+						class="btn btn-primary contentSelection">Add Doctor Booking</button>
+					<button id="addUser" type="button"
+						class="btn btn-primary contentSelection">Add User</button>
 					<button id="addDoc" type="button"
 						class="btn btn-primary contentSelection">Add Doctor</button>
 					<button id="addSlot" type="button"
-						class="btn btn-primary contentSelection">Add Slots</button>
-					<button id="addUser" type="button"
-						class="btn btn-primary contentSelection">Add User</button>
-					<button id="addBooking" type="button"
-						class="btn btn-primary contentSelection">Add Booking</button>
-					<button id="getBookings" type="button"
-						class="btn btn-primary contentSelection">View Bookings</button>
+						class="btn btn-primary contentSelection">Add Doctor Slots</button>
+					
+					
+					
 				</div>
 			</div>
 			<div class="col-md-10">
+				
+				
+		
 				<div id="addDocDiv" class="contentDiv">
 					<div id="signupbox" class="mainbox col-md-6  col-sm-8 ">
 						<div class="panel panel-info">
@@ -526,43 +819,32 @@
 							<div class="panel-body">
 								<div id="signupform" class="form-horizontal">
 									<div class="form-group">
-										<label for="Name" class="col-md-3 control-label">Name</label>
+										<label for="UserName" class="col-md-3 control-label">Mobile</label>
 										<div class="col-md-9">
-											<input id="name" type="tel" class="form-control"
-												placeholder="name" onkeypress="nameclear()" />
-											<div id="nameerror" class="errorstyle"></div>
+											<input id="username" type="text" class="form-control"
+												placeholder="username" onkeypress="usernameclear()" />
+											<div id="usernameerror" class="errorstyle"></div>
 											<br />
 										</div>
 									</div>
-
-									<div class="form-group">
-										<label for="Mobile Number" class="col-md-3 control-label">Mobile
-											Number</label>
+									<div id="pwdDiv" class="form-group">
+										<label for="password" class="col-md-3 control-label">password</label>
 										<div class="col-md-9">
-											<input id="mobile" type="tel" class="form-control"
-												placeholder="Mobile" onkeypress="mobileclear()" />
-											<div id="mobileerror" class="errorstyle"></div>
+											<input id="password" type="password" class="form-control"
+												placeholder="password" onkeypress="passwordclear()" />
+											<div id="passworderror" class="errorstyle"></div>
 											<br />
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="startTime" class="col-md-3 control-label">Start
-											Time</label>
+										<label for="name" class="col-md-3 control-label">Name</label>
 										<div class="col-md-9">
-											<input id="startTime" type="datetime-local"
-												class="form-control" required="required"
-												placeholder="startTime" />
+											<input id="name1" type="text" class="form-control"
+												placeholder="name" onkeypress="passwordclear()" />
+											<div id="passworderror" class="errorstyle"></div>
+											<br />
 										</div>
 									</div>
-									<div class="form-group">
-										<label for="endTime" class="col-md-3 control-label">End
-											Time</label>
-										<div class="col-md-9">
-											<input id="endTime" type="text" class="form-control"
-												required="required" placeholder="end time" />
-										</div>
-									</div>
-
 
 									<div class="form-group">
 										<!-- Button -->
@@ -634,8 +916,8 @@
 							</ul>
 						</div>
 						<div class="col-md-3">
-							<div class="displaystyle">
-								<div id="displayArea" style="background-color: cyan;"></div>
+							<div class="displaystyle"><h4 style="color: green;">Select Doctor</h4>
+								<div id="displayArea"></div>
 							</div>
 						</div>
 						<div class="col-md-3">
@@ -656,7 +938,7 @@
 											<option value="reference">Reference</option>
 
 										</select>
-
+										<div id="output" class="clinicbookingstyle"></div>
 									</div>
 								</div>
 
@@ -684,15 +966,72 @@
 						</div>
 					</div>
 				</div>
-			</div>
+				<div id="addLabBookingDiv" class="contentDiv">
+					<div id="labTypeDiv" class="col-md-2"></div>
+					<div id="labSubTypeDiv" class="col-md-2"></div>
+					<div id="dateArea2" style="display: none;" class="col-md-2">
+						Preferred Date And Time <input id="datetimepicker2"
+							style="width: 80%;" />
 
+						<div id="slotbookingArea2" style="display: none;">
+							<select id="slotsDropdown2"></select> <select id="bookingSource2">
+								<option value="practo">Practo</option>
+								<option value="reference">Reference</option>
+
+							</select>
+							<div id="output2" class="clinicbookingstyle"></div>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div id="form2" style="display: none;">
+							<span for="labbookingname" class="blocklabel">Name</span><br />
+							<input name="labbookingname" type="text" id="labbookingname"
+								style="width: 280px;" /> <br /> <span for="labbookingmobile"
+								class="blocklabel">Mobile</span> <br /> <input
+								name="labbookingmobile" type="text" id="labbookingmobile"
+								style="width: 280px;" /> <br /> <span for="labbookingaddress"
+								class="blocklabel">Address</span><br />
+							<textarea name="labbookingaddress" id="labbookingaddress"
+								style="width: 280px;"></textarea>
+							<br /> <span for="labbookingsource" class="blocklabel">Source</span><br />
+							<select id="labbookingsource">
+								<option value="reference">Reference</option>
+								<option value="practo">Practo</option>
+
+							</select> <br /> <span for="recievemode" class="blocklabel">recieve_mode</span><br />
+							<select id="recievemode">
+								<option value="walkin">Walkin</option>
+								<option value="homepickup">Home Pickup</option>
+
+							</select> <br />
+							<button id="submitbtn2" type="submit"
+								class="btn btn-primary btn-md">Submit</button>
+						</div>
+					</div>
+
+				</div>
+				
+			</div>
+			
 			<div id="getBookingsDiv" class="contentDiv col-md-10">
-				<div id="displayBookingArea"></div>
+				<div id="displayBookingArea">
+					<table class="table table-hover " id="myBookingsTableDiv">
+						<thead>
+							<tr><th class="tablestyle">Slot Time</th><th class="tablestyle">User Name</th><th class="tablestyle">User Mobile</th><th class="tablestyle">Doctor Name</th><th class="tablestyle">Speciality</th>
+							</tr>
+							
+						</thead>
+						<tbody>
+    							
+    						</tbody>
+					</table>
+				</div>
 			</div>
+			
 		</div>
-		
-
-		<div id="data"></div>
+		<div class="col-sm-10" align="center">
+					<label id="displayAreaDiv"></label>
+				</div>
 
 	</section>
 </body>

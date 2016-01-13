@@ -25,6 +25,12 @@ public class LabSubType {
 	public LabSubType(){
 		super();
 	}
+	
+	public LabSubType(Integer id) {
+		super();
+		this.id = id;
+	}
+
 	@Id
 	@Column(name="id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,8 +60,6 @@ public class LabSubType {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "lab_type_id", nullable = false)
 	private LabType labType;
-	
-	
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "updated_on")
@@ -140,8 +144,6 @@ public class LabSubType {
 	public void setLabType(LabType labType) {
 		this.labType = labType;
 	}
-
-	
 
 	public Date getModified_on() {
 		return modified_on;
