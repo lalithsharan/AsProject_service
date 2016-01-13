@@ -1,0 +1,5 @@
+/tmp
+/wc
+wow/src/main/webapp/WEB-INF/spring-dispatcher-servlet.xml
+wow/src/main/webapp/WEB-INF/applicationContext-security.xml
+wow/src/main/resources/logback.xml
