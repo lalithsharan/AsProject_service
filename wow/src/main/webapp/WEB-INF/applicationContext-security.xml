@@ -16,7 +16,7 @@
 			default-target-url="/"
 			authentication-success-handler-ref="authSuccessHandler" 
 			authentication-failure-handler-ref="authFailureHandler" />
-		<security:logout delete-cookies="JSESSIONID" />
+		<security:logout delete-cookies="JSESSIONID" logout-success-url="/"/>
 		<security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')" />
 		<security:intercept-url pattern="/home-user" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/home-clinic" access="hasRole('ROLE_CLINIC')" />

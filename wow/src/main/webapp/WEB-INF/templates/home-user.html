@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="layout1">
 <head>
 <title>User Home</title>
 <script type="text/javascript">
@@ -9,6 +9,8 @@
 		
 		$('#myClinicBookingsDiv').hide();
 		$('#myLabBookingsDiv').hide();
+        
+        $('#myClinicBookingsDiv').show();
 		
 		var myClinicBookingsTableDiv = $('#myClinicBookingsTableDiv').DataTable();
 		var myLabBookingsTableDiv = $('#myLabBookingsTableDiv').DataTable();
@@ -68,7 +70,8 @@
 </head>
 <body>
 	<section layout:fragment="content">
-		<div class="row">
+        <div class="container">
+            <div class="row" style="padding:10px">
 		<div class="col-md-2 btn-group-vertical">
 		<button id="bookingsbtn" type="button" class="btn btn-primary contentSelection">My Doctor Bookings</button>
 		<button id="labbookingsbtn" type="button"
@@ -104,6 +107,7 @@
 	 </div>
 			
 			</div>
-	</section>
+        </div>
+    </section>
 </body>
 </html>

@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="layout1">
 <head>
 <title>Register User</title>
 </head>
 <body>
 	<section layout:fragment="content">
-		<div ng-app="registerUserApp" ng-controller="registerCtrl"
-			class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2"
-			style="padding-top: 50px">
-			<div class="panel panel-info">
+        <div>
+            <div ng-app="registerUserApp" ng-controller="registerCtrl"
+                class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2"
+                style="padding-top: 50px">
+                <div class="panel panel-info">
 				<div class="panel-heading">
 					<div class="panel-title">Register User</div>
 				</div>
@@ -84,7 +85,8 @@
 				</div>
 			</div>
 		</div>
-		<script th:inline="javascript">
+		</div>
+        <script th:inline="javascript">
 			/*<![CDATA[*/
 			var registerUserApp = angular.module('registerUserApp', []);
 			registerUserApp

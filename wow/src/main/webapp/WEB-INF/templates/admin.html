@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="layout1">
 <head>
 	<title>Admin</title>
 	<script>
@@ -168,7 +168,8 @@
 </head>
 <body>
 	<section layout:fragment="content">
-		<div class="row">
+        <div class="container">
+            <div class="row">
 			<div class="col-md-2">
 				<div class="btn-group-vertical">
 				  <button id="addRec" type="button" class="btn btn-primary contentSelection">Register</button>
@@ -309,6 +310,7 @@
 			
 			
 		</div>
-	</section>
+        </div>
+    </section>
 </body>
 </html>

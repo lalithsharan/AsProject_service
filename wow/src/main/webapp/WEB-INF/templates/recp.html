@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="layout">
+	layout:decorator="layout1">
 <head>
 <title>Recp</title>
 <script>
@@ -213,6 +213,7 @@
 							}
 						}
 					});
+                    
 
 				});
 
@@ -277,15 +278,21 @@
 											}
 										}
 									});
+                                    $("#datetimepicker").change();
+                                    
 						});
 
-		$("#datebtn").click(function() {
+		$("#datetimepicker").change(function() {
+            $("#datebtn").click();
+        });
+        
+        $("#datebtn").click(function() {
 			date = $('#datetimepicker').val();
 			doctorId = $('input[name=doctor]:checked', '#displayArea').val();
 			$('#form').show();
 			$('#slotbookingArea').show();
 			$('#output').empty();
-
+            $('#slotsDropdown').find('option').remove();
 			$.ajax({
 				url : "api/slotsByDate",
 				data : {
@@ -412,6 +419,8 @@
 																.hide();
 														$('#dateArea').show();
 														$('#output').empty();
+                                                        date = $('#datetimepicker').datepicker("setDate",new Date());
+                                                        $("#datetimepicker").change();
 													})
 										} // End Success : function
 									}); // End Ajax
@@ -638,7 +647,8 @@
 </head>
 <body>
 	<section layout:fragment="content">
-		<div class="row">
+        <div class="container">
+            <div class="row" style="padding:10px">
 			<div class="col-md-2">
 				<div class="btn-group-vertical">
 					<button id="getBookings" type="button"
@@ -925,7 +935,7 @@
 								<div id="dateArea" style="display: none;">
 									Preferred Date And Time <input id="datetimepicker"
 										style="width: 80%;" />
-									<div class=" controls">
+									<div class=" controls" style="display: none;">
 										<button id="datebtn" class="btn btn-success">
 											<i class="glyphicon glyphicon-send"></i>Get Slot
 										</button>
@@ -1029,10 +1039,10 @@
 			</div>
 			
 		</div>
-		<div class="col-sm-10" align="center">
+            <div class="col-sm-10" align="center">
 					<label id="displayAreaDiv"></label>
 				</div>
-
+        </div>
 	</section>
 </body>
 </html>

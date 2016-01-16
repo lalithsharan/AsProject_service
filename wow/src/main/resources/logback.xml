@@ -18,25 +18,11 @@
 			</fileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
-		
-		 <!-- <file>D:\GitHub\AsProject_service\tmp\webapp.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			
-			<fileNamePattern>D:\GitHub\AsProject_service\tmp\webapp.%d{yyyy-MM-dd}.log
-			</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy> -->
-		
+
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
 	</appender>
-
-	<!-- <logger name="org.springframework" level="error" additivity="false"> 
-		<appender-ref ref="STDOUT" /> </logger> -->
-
-	<!-- <logger name="com.wow.*" level="debug" additivity="false"> <appender-ref 
-		ref="STDOUT" /> </logger> -->
 
 	<logger name="org.springframework" level="ERROR" />
 	<logger name="org.thymeleaf" level="ERROR" />

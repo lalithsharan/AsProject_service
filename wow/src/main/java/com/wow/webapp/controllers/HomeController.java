@@ -25,7 +25,7 @@ public class HomeController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView index(){
 		logger.debug("/ get start");
-		String home = "HomeOne";
+		String home = "index";
 		ModelAndView mv = null;
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if(auth instanceof AnonymousAuthenticationToken){
